@@ -6,6 +6,7 @@ package it.polito.tdp.ufo;
 
 import java.net.URL;
 import java.time.Year;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.ufo.model.AnnoCount;
@@ -29,14 +30,31 @@ public class UfoController {
     private ComboBox<AnnoCount> boxAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxStato"
-    private ComboBox<?> boxStato; // Value injected by FXMLLoader
+    private ComboBox<String> boxStato; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
 
     @FXML
     void handleAnalizza(ActionEvent event) {
-    	    	
+    	String stato = boxStato.getValue() ;
+    	if(stato==null) {
+    		txtResult.appendText("ERRORE: devi selezionare uno stato\n");
+    		return ;
+    	}
+    	
+    	List<String> successivi = model.getStatiSuccessivi(stato) ;
+    	List<String> precedenti = model.getStatiPrecedenti(stato) ;
+    	List<String> raggiungibili = model.getStatiRaggiungibili(stato) ;
+    	
+    	txtResult.appendText("\nStato di partenza: "+stato+"\n");
+
+    	txtResult.appendText("Stati SUCCESSIVI\n");
+    	txtResult.appendText(successivi.toString()+"\n");
+    	txtResult.appendText("Stati PRECEDENTI\n");
+    	txtResult.appendText(precedenti.toString()+"\n");
+    	txtResult.appendText("Stati RAGGIUNGIBILI\n");
+    	txtResult.appendText(raggiungibili.toString()+"\n");
     }
 
     @FXML
@@ -48,6 +66,9 @@ public class UfoController {
     	}
     	
     	model.creaGrafo(anno.getAnno());
+    	
+    	boxStato.getItems().clear();
+    	boxStato.getItems().addAll(model.getStati()) ;
     }
 
     @FXML
