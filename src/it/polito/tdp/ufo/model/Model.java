@@ -34,14 +34,18 @@ public class Model {
 		
 		Graphs.addAllVertices(this.graph, stati) ;
 		
-		for(String stato1: graph.vertexSet()) {
-			for(String stato2: graph.vertexSet()) {
-				if(!stato1.equals(stato2)) {
-					if(dao.esisteArco(stato1, stato2, anno)) {
-						graph.addEdge(stato1, stato2) ;
-					}
-				}
-			}
+//		for(String stato1: graph.vertexSet()) {
+//			for(String stato2: graph.vertexSet()) {
+//				if(!stato1.equals(stato2)) {
+//					if(dao.esisteArco(stato1, stato2, anno)) {
+//						graph.addEdge(stato1, stato2) ;
+//					}
+//				}
+//			}
+//		}
+		List<StringPair>archi = dao.getEdges(anno) ;
+		for(StringPair sp : archi) {
+			graph.addEdge(sp.getStr1(), sp.getStr2()) ;
 		}
 		
 		System.out.println(graph.vertexSet().size()+ " "+ graph.edgeSet().size());

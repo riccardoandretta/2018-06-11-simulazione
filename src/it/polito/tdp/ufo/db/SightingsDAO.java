@@ -12,6 +12,7 @@ import javax.naming.spi.DirStateFactory.Result;
 
 import it.polito.tdp.ufo.model.AnnoCount;
 import it.polito.tdp.ufo.model.Sighting;
+import it.polito.tdp.ufo.model.StringPair;
 
 public class SightingsDAO {
 	
@@ -149,6 +150,39 @@ public class SightingsDAO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false ;
+		}
+		
+	}
+	
+	public List<StringPair> getEdges(Year anno) {
+		String sql = "select s1.state as state1 , s2.state as state2, count(*) " + 
+				"from sighting s1, sighting s2 " + 
+				"where year(s1.datetime)=year(s2.datetime) " + 
+				"and year(s1.datetime)=? " + 
+				"and s1.country='us' " + 
+				"and s2.country='us' " + 
+				"and s2.datetime>s1.datetime " + 
+				"and s1.state<>s2.state " + 
+				"group by s1.state, s2.state " ;
+		
+		try {
+			Connection conn = DBConnect.getConnection() ;
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			st.setInt(1, anno.getValue());
+			
+			ResultSet res = st.executeQuery() ;
+			
+			List<StringPair>list = new ArrayList<>() ;
+			while(res.next()) {
+				list.add(new StringPair(res.getString("state1"), res.getString("state2"))) ;
+			}
+			conn.close();
+			return list ;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null ;
 		}
 		
 	}
